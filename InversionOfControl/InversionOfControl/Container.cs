@@ -13,9 +13,13 @@ namespace InversionOfControl
 			{
 				throw new InterfaceExpectedException();
 			}
-			if (!secondType.IsClass)
+			if (!secondType.IsClass || secondType.IsAbstract)
 			{
-				throw new ClassExpectedException();
+				throw new ConcreteClassExpectedException();
+			}
+			if (!secondType.IsAssignableFrom(firstType))
+			{
+				throw new InheritanceException();
 			}
 			throw new NotImplementedException();
 		}
