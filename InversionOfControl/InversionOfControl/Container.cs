@@ -1,7 +1,5 @@
 ﻿using InversionOfControl.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace InversionOfControl
 {
@@ -10,9 +8,14 @@ namespace InversionOfControl
 		public void Register<T, U>() 
 		{
 			var firstType = typeof(T);
+			var secondType = typeof(U);
 			if (!firstType.IsInterface)
 			{
 				throw new InterfaceExpectedException();
+			}
+			if (!secondType.IsClass)
+			{
+				throw new ClassExpectedException();
 			}
 			throw new NotImplementedException();
 		}

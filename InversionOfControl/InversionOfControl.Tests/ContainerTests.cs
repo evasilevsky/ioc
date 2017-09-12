@@ -17,9 +17,17 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ThrowsInterfaceExpectedException_WhenFirstTypeIsNotAnInterface()
 			{
-				Assert.Throws<InterfaceExpectedException>(() =>
+				var exception = Assert.Throws<InterfaceExpectedException>(() =>
 				{
 					systemUnderTest.Register<A, A>();
+				});
+			}
+			[Fact]
+			public void ThrowsClassExpectedException_WhenSecondTypeIsNotAClass()
+			{
+				var exception = Assert.Throws<ClassExpectedException>(() =>
+				{
+					systemUnderTest.Register<IA, IA>();
 				});
 			}
 		}
