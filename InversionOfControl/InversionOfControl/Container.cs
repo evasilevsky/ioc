@@ -1,10 +1,13 @@
 ﻿using InversionOfControl.Exceptions;
 using System;
+using System.Collections.Generic;
 
 namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
+		private Dictionary<Type, object> concreteObjects = new Dictionary<Type, object>();
+
 		public void Register<T, U>() 
 		{
 			var firstType = typeof(T);
@@ -17,11 +20,12 @@ namespace InversionOfControl
 			{
 				throw new ConcreteClassExpectedException();
 			}
-			if (!secondType.IsAssignableFrom(firstType))
+			if (!firstType.IsAssignableFrom(secondType))
 			{
 				throw new InheritanceException();
 			}
-			throw new NotImplementedException();
+			var concreteObject = Activator.CreateInstance(typeof(U));
+			concreteObjects.Add(firstType,concreteObject);
 		}
 
 		public void Register<T, U>(LifecycleType lifecycleType)
@@ -29,9 +33,14 @@ namespace InversionOfControl
 			throw new NotImplementedException();
 		}
 
-		public T Resolve<T>()
+		public object Resolve<T>()
 		{
-			throw new NotImplementedException();
+			var type = typeof(T);
+			if (!concreteObjects.ContainsKey(type))
+			{
+				throw new DependencyNotRegisteredException();
+			}
+			return concreteObjects[type];
 		}
 	}
 }

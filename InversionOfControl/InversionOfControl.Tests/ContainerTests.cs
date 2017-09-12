@@ -47,9 +47,31 @@ namespace InversionOfControl.Tests
 					systemUnderTest.Register<IA, B>();
 				});
 			}
+			[Fact]
+			public void RegistersDependency_WhenConcreteClassImplementsInterface()
+			{
+				systemUnderTest.Register<IA, A>();
+			}
 		}
 
-		
-        
-    }
+		public class Resolve : ContainerTests
+		{
+			[Fact]
+			public void ThrowsDependencyNotRegisteredException_WhenTypeIsNotRegistered()
+			{
+				var exception = Assert.Throws<DependencyNotRegisteredException>(() =>
+				{
+					systemUnderTest.Resolve<IA>();
+				});
+			}
+			[Fact]
+			public void ReturnsDependency_WhenDependencyWasRegistered()
+			{
+				systemUnderTest.Register<IA, A>();
+				var result = systemUnderTest.Resolve<IA>();
+				Assert.IsType<A>(result);
+			}
+		}
+
+	}
 }
