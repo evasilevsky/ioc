@@ -11,29 +11,41 @@ namespace InversionOfControl
 
 		public void Register<T, U>() 
 		{
-			var firstType = typeof(T);
+			var interfaceType = typeof(T);
 			var secondType = typeof(U);
-			if (!firstType.IsInterface)
+			Register(interfaceType, secondType);
+		}
+
+		private void Register(Type interfaceType, Type concreteType)
+		{
+			if (!interfaceType.IsInterface)
 			{
 				throw new InterfaceExpectedException();
 			}
-			if (!secondType.IsClass || secondType.IsAbstract)
+			if (!concreteType.IsClass || concreteType.IsAbstract)
 			{
 				throw new ConcreteClassExpectedException();
 			}
-			if (!firstType.IsAssignableFrom(secondType))
+			if (!interfaceType.IsAssignableFrom(concreteType))
 			{
 				throw new InheritanceException();
 			}
-			var constructors = secondType.GetConstructors();
+			var constructors = concreteType.GetConstructors();
 			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
+
+			var constructorParameters = new List<Type>();
+			object instance = null;
+
 			if (constructorsWithDependencies.Count() > 0)
 			{
 				throw new MultipleConstructorsException();
 			}
-			var constructorParameters = new List<Type>();
-			var concreteObject = Activator.CreateInstance(secondType);
-			concreteObjects.Add(firstType,concreteObject);
+			else if (constructorsWithDependencies.Count() == 0)
+			{
+				instance = Activator.CreateInstance(concreteType);
+			}
+
+			concreteObjects.Add(interfaceType, instance);
 		}
 
 		public void Register<T, U>(LifecycleType lifecycleType)
