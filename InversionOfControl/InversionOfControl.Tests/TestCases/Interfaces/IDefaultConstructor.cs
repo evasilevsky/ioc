@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace InversionOfControl.Tests.TestCases.Interfaces
+namespace InversionOfControl.Tests.TestCases
 {
-    public interface IC
+    public interface IDefaultConstructor
     {
     }
 }

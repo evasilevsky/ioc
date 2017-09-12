@@ -5,15 +5,13 @@ using System.Text;
 
 namespace InversionOfControl.Tests.TestCases
 {
-    public class C : IC
+    public class OneDependencyWithDefaultConstructor : IOneDependencyWithDefaultConstructor
     {
-		private readonly IA a;
-		private readonly IB b;
+		private readonly IDefaultConstructor a;
 
-		public C(IA a, IB b)
+		public OneDependencyWithDefaultConstructor(IDefaultConstructor a)
 		{
 			this.a = a;
-			this.b = b;
 		}
     }
 }

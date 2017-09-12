@@ -20,7 +20,7 @@ namespace InversionOfControl.Tests
 			{
 				var exception = Assert.Throws<InterfaceExpectedException>(() =>
 				{
-					systemUnderTest.Register<A, A>();
+					systemUnderTest.Register<DefaultConstructor, DefaultConstructor>();
 				});
 			}
 			[Fact]
@@ -28,7 +28,7 @@ namespace InversionOfControl.Tests
 			{
 				var exception = Assert.Throws<ConcreteClassExpectedException>(() =>
 				{
-					systemUnderTest.Register<IA, IA>();
+					systemUnderTest.Register<IDefaultConstructor, IDefaultConstructor>();
 				});
 			}
 			[Fact]
@@ -36,7 +36,7 @@ namespace InversionOfControl.Tests
 			{
 				var exception = Assert.Throws<ConcreteClassExpectedException>(() =>
 				{
-					systemUnderTest.Register<IA, D>();
+					systemUnderTest.Register<IDefaultConstructor, D>();
 				});
 			}
 			[Fact]
@@ -44,32 +44,51 @@ namespace InversionOfControl.Tests
 			{
 				var exception = Assert.Throws<InheritanceException>(() =>
 				{
-					systemUnderTest.Register<IA, B>();
+					systemUnderTest.Register<IDefaultConstructor, OneDependencyWithDefaultConstructor>();
 				});
 			}
+
+			[Fact]
+			public void ThrowsMultipleConstructorsException_WhenConcreteTypeContainsMultipleConstructors()
+			{
+				var exception = Assert.Throws<MultipleConstructorsException>(() =>
+				{
+					systemUnderTest.Register<IMultipleConstructor, MultipleConstructor>();
+				});
+			}
+
 			[Fact]
 			public void RegistersDependency_WhenConcreteClassImplementsInterface()
 			{
-				systemUnderTest.Register<IA, A>();
+				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
 			}
 		}
 
 		public class Resolve : ContainerTests
 		{
 			[Fact]
-			public void ThrowsDependencyNotRegisteredException_WhenTypeIsNotRegistered()
+			public void ThrowsDependencyNotRegisteredException_WhenTypeToResolveIsNotRegistered()
 			{
 				var exception = Assert.Throws<DependencyNotRegisteredException>(() =>
 				{
-					systemUnderTest.Resolve<IA>();
+					systemUnderTest.Resolve<IDefaultConstructor>();
 				});
 			}
 			[Fact]
-			public void ReturnsDependency_WhenDependencyWasRegistered()
+			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
 			{
-				systemUnderTest.Register<IA, A>();
-				var result = systemUnderTest.Resolve<IA>();
-				Assert.IsType<A>(result);
+				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
+				var result = systemUnderTest.Resolve<IDefaultConstructor>();
+				Assert.IsType<DefaultConstructor>(result);
+			}
+
+			[Fact(Skip = "Testing multiple constructors before this")]
+			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
+			{
+				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
+				systemUnderTest.Register<IOneDependencyWithDefaultConstructor, OneDependencyWithDefaultConstructor>();
+				var result = systemUnderTest.Resolve<IOneDependencyWithDefaultConstructor>();
+				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
 			}
 		}
 

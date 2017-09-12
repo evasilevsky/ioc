@@ -4,7 +4,7 @@ using System.Text;
 
 namespace InversionOfControl.Tests.TestCases.Interfaces
 {
-    public interface IB
+    public interface IOneDependencyWithDefaultConstructor
     {
     }
 }

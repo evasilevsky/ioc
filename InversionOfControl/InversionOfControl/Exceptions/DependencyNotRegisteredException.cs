@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace InversionOfControl.Exceptions
 {
-    public class DependencyNotRegisteredException : Exception
+	public class DependencyNotRegisteredException : Exception
     {
 		public DependencyNotRegisteredException() : base()
 		{

@@ -1,6 +1,7 @@
 ﻿using InversionOfControl.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace InversionOfControl
 {
@@ -24,7 +25,14 @@ namespace InversionOfControl
 			{
 				throw new InheritanceException();
 			}
-			var concreteObject = Activator.CreateInstance(typeof(U));
+			var constructors = secondType.GetConstructors();
+			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
+			if (constructorsWithDependencies.Count() > 0)
+			{
+				throw new MultipleConstructorsException();
+			}
+			var constructorParameters = new List<Type>();
+			var concreteObject = Activator.CreateInstance(secondType);
 			concreteObjects.Add(firstType,concreteObject);
 		}
 
