@@ -90,6 +90,28 @@ namespace InversionOfControl.Tests
 				var result = systemUnderTest.Resolve<IOneDependencyWithDefaultConstructor>();
 				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
 			}
+
+			[Fact]
+			public void ResolvesDependency_WhenItHasADependencyWithADependency()
+			{
+				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
+				systemUnderTest.Register<IOneDependencyWithDefaultConstructor, OneDependencyWithDefaultConstructor>();
+				systemUnderTest.Register<IDependencyWithDependency, DependencyWithDependency>();
+				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
+				Assert.IsType<DependencyWithDependency>(result);
+			}
+
+
+			[Fact(Skip = "This fails because the search for an inherited dependency results in ICircularDependency1.IsSubclassOf(CircularDependency1) equal to false")]
+			public void ResolvesDependency_WhenItHasACircularDependency()
+			{
+				systemUnderTest.Register<ICircularDependency1, CircularDependency1>();
+				systemUnderTest.Register<ICircularDependency2, CircularDependency2>();
+				var circularResult1 = systemUnderTest.Resolve<ICircularDependency1>();
+				var circularResult2 = systemUnderTest.Resolve<ICircularDependency2>();
+				Assert.IsType<CircularDependency1>(circularResult1);
+				Assert.IsType<CircularDependency1>(circularResult2);
+			}
 		}
 
 	}

@@ -73,7 +73,7 @@ namespace InversionOfControl
 				}
 				else
 				{
-					var inheritedType = GetInheritedType(dependency.GetType());
+					var inheritedType = GetInheritedType(dependency.ParameterType);
 					Register(dependency.GetType(), inheritedType);
 					instanceDependency = Resolve(dependency.GetType());
 				}
