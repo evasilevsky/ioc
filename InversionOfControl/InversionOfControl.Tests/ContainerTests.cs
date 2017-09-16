@@ -82,7 +82,7 @@ namespace InversionOfControl.Tests
 				Assert.IsType<DefaultConstructor>(result);
 			}
 
-			[Fact(Skip = "Testing multiple constructors before this")]
+			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
 			{
 				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
