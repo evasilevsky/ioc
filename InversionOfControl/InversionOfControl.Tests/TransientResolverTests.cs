@@ -1,5 +1,6 @@
 ﻿using InversionOfControl.Tests.TestCases;
 using InversionOfControl.Tests.TestCases.Interfaces;
+using System;
 using Xunit;
 
 namespace InversionOfControl.Tests
@@ -17,9 +18,8 @@ namespace InversionOfControl.Tests
 			public void ResolvesDifferentInstance()
 			{
 				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
-				systemUnderTest.RegisterDependency(dependency);
-				var firstInstance = systemUnderTest.Resolve(dependency);
-				var secondInstance = systemUnderTest.Resolve(dependency);
+				var firstInstance = systemUnderTest.Resolve(dependency, Fakes.CreateDefaultConstructorInstance);
+				var secondInstance = systemUnderTest.Resolve(dependency, Fakes.CreateDefaultConstructorInstance);
 				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
 			}
 
@@ -27,32 +27,34 @@ namespace InversionOfControl.Tests
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
 			{
 				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
-				systemUnderTest.RegisterDependency(dependency);
-				var result = systemUnderTest.Resolve(dependency);
+				var result = systemUnderTest.Resolve(dependency, Fakes.CreateDefaultConstructorInstance);
 				Assert.IsType<DefaultConstructor>(result);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
 			{
-				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
 				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
-				systemUnderTest.RegisterDependency(defaultConstructorDependency);
-				systemUnderTest.RegisterDependency(dependencyWithOneDependency);
-				var result = systemUnderTest.Resolve(dependencyWithOneDependency);
-				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
+				var dependencyResult = systemUnderTest.Resolve(dependency, Fakes.CreateDefaultConstructorInstance);
+				var dependencyWithOneDependencyResult = systemUnderTest.Resolve(dependencyWithOneDependency, Fakes.CreateOneDependencyWithDefaultConstructor);
+
+				Assert.IsType<DefaultConstructor>(dependencyResult);
+				Assert.IsType<OneDependencyWithDefaultConstructor>(dependencyWithOneDependencyResult);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenItHasADependencyWithADependency()
 			{
-				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
 				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
 				var dependencyWithDependency = new Dependency(typeof(IDependencyWithDependency), typeof(DependencyWithDependency), LifecycleType.Transient);
-				systemUnderTest.RegisterDependency(defaultConstructorDependency);
-				systemUnderTest.RegisterDependency(dependencyWithOneDependency);
-				systemUnderTest.RegisterDependency(dependencyWithDependency);
 
-				var result = systemUnderTest.Resolve(dependencyWithDependency);
-				Assert.IsType<DependencyWithDependency>(result);
+				var dependencyResult = systemUnderTest.Resolve(dependency, Fakes.CreateDefaultConstructorInstance);
+				var dependencyWithOneDependencyResult = systemUnderTest.Resolve(dependencyWithOneDependency, Fakes.CreateOneDependencyWithDefaultConstructor);
+				var dependencyWithDependencyResult = systemUnderTest.Resolve(dependencyWithDependency, Fakes.CreateDependencyWithDependencyConstructor);
+
+				Assert.IsType<DefaultConstructor>(dependencyResult);
+				Assert.IsType<OneDependencyWithDefaultConstructor>(dependencyWithOneDependencyResult);
+				Assert.IsType<DependencyWithDependency>(dependencyWithDependencyResult);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ using InversionOfControl.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace InversionOfControl
 {
@@ -14,6 +15,11 @@ namespace InversionOfControl
 			var interfaceType = typeof(T);
 			var secondType = typeof(U);
 			Register(interfaceType, secondType, lifecycleType);
+		}
+
+		public void Clear()
+		{
+			ResolverFactory.Clear();
 		}
 
 		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Transient)
@@ -46,7 +52,57 @@ namespace InversionOfControl
 				throw new DependencyNotRegisteredException($"{interfaceType.FullName} did not get registered. ");
 			}
 			var resolver = ResolverFactory.Get(dependency.LifecycleType);
-			return resolver.Resolve(dependency);
+			return resolver.Resolve(dependency, this.CreateInstance);
+		}
+
+
+		public Dependency GetDependencyByType(Type type)
+		{
+			var dependency = configurations.FirstOrDefault(dep => dep.EqualsType(type));
+			if (dependency == null)
+			{
+				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
+			}
+			return dependency;
+		}
+
+		protected object CreateInstance(Type concreteType)
+		{
+			var constructors = concreteType.GetConstructors();
+			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
+			object instance = null;
+			if (constructorsWithDependencies.Count() > 1)
+			{
+				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
+			}
+			else if (constructorsWithDependencies.Count() == 0)
+			{
+				instance = Activator.CreateInstance(concreteType);
+			}
+			else
+			{
+				var dependencies = constructorsWithDependencies.ToArray()[0].GetParameters();
+				var instanceDependencies = GetInstanceDependenciesByType(dependencies);
+
+				instance = Activator.CreateInstance(concreteType, instanceDependencies);
+			}
+			return instance;
+		}
+
+		private object[] GetInstanceDependenciesByType(ParameterInfo[] constructorParameters)
+		{
+			var instanceDependencies = new List<object>();
+			foreach (var constructorParameter in constructorParameters)
+			{
+				object instanceDependency = null;
+				var dependency = GetDependencyByType(constructorParameter.ParameterType);
+				var inheritedType = dependency.ConcreteType;
+				var resolver = ResolverFactory.Get(dependency.LifecycleType);
+				instanceDependency = resolver.Resolve(dependency, this.CreateInstance);
+
+				instanceDependencies.Add(instanceDependency);
+			}
+			return instanceDependencies.ToArray();
 		}
 	}
 }

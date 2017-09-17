@@ -3,19 +3,17 @@ using System;
 
 namespace InversionOfControl
 {
-	public class TransientResolver : Resolver
+	public class TransientResolver : IResolver
 	{
 		public TransientResolver()
 		{
 
 		}
 
-		public override LifecycleType LifecycleType => LifecycleType.Transient;
-
-		public override object Resolve(Dependency dependency)
+		public object Resolve(Dependency dependency, Func<Type, object> createInstance)
 		{
 			var concreteType = dependency.ConcreteType;
-			return CreateInstance(concreteType);
+			return createInstance(concreteType);
 		}
 	}
 }

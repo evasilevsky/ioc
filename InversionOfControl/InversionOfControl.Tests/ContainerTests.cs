@@ -18,6 +18,7 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ThrowsInterfaceExpectedException_WhenFirstTypeIsAClass()
 			{
+				ResolverFactory.Clear();
 				var exception = Assert.Throws<InterfaceExpectedException>(() =>
 				{
 					systemUnderTest.Register<DefaultConstructor, DefaultConstructor>();
@@ -27,6 +28,7 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ThrowsClassExpectedException_WhenSecondTypeIsAnInterface()
 			{
+				ResolverFactory.Clear();
 				var exception = Assert.Throws<ConcreteClassExpectedException>(() =>
 				{
 					systemUnderTest.Register<IDefaultConstructor, IDefaultConstructor>();
@@ -36,6 +38,7 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ThrowsClassExpectedException_WhenSecondTypeIsAbstract()
 			{
+				ResolverFactory.Clear();
 				var exception = Assert.Throws<ConcreteClassExpectedException>(() =>
 				{
 					systemUnderTest.Register<IDefaultConstructor, AbstractClass>();
@@ -45,6 +48,7 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ThrowsInheritanceException_WhenSecondTypeDoesNotInheritFromFirst()
 			{
+				ResolverFactory.Clear();
 				var exception = Assert.Throws<InheritanceException>(() =>
 				{
 					systemUnderTest.Register<IDefaultConstructor, OneDependencyWithDefaultConstructor>();
@@ -55,6 +59,7 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ThrowsMultipleConstructorsException_WhenConcreteTypeContainsMultipleConstructors()
 			{
+				ResolverFactory.Clear();
 				var exception = Assert.Throws<MultipleConstructorsException>(() =>
 				{
 					systemUnderTest.Register<IMultipleConstructor, MultipleConstructor>();
@@ -65,6 +70,7 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void RegistersDependency_WhenConcreteClassImplementsInterface()
 			{
+				ResolverFactory.Clear();
 				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
 			}
 		}
