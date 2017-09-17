@@ -22,6 +22,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<DefaultConstructor, DefaultConstructor>();
 				});
+				Assert.Contains(" is not an interface.", exception.Message);
 			}
 			[Fact]
 			public void ThrowsClassExpectedException_WhenSecondTypeIsAnInterface()
@@ -48,6 +49,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IDefaultConstructor, OneDependencyWithDefaultConstructor>();
 				});
+				Assert.Contains(" is not assignable from ", exception.Message);
 			}
 
 			[Fact]
@@ -57,6 +59,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IMultipleConstructor, MultipleConstructor>();
 				});
+				Assert.Contains(" has multiple constructors.", exception.Message);
 			}
 
 			[Fact]
@@ -75,6 +78,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Resolve<IDefaultConstructor>();
 				});
+				Assert.Contains(" did not get registered. ", exception.Message);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
@@ -110,14 +114,6 @@ namespace InversionOfControl.Tests
 				var firstInstance = systemUnderTest.Resolve<IDefaultConstructor>();
 				var secondInstance = systemUnderTest.Resolve<IDefaultConstructor>();
 				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
-			}
-
-			[Fact(Skip = "If it isn't registered, this doesn't work")]
-			public void ResolvesDependency_WhenNoOtherDependenciesItUsesWereRegistered()
-			{
-				systemUnderTest.Register<IDependencyWithDependency, DependencyWithDependency>();
-				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
-				Assert.IsType<DependencyWithDependency>(result);
 			}
 		}
 

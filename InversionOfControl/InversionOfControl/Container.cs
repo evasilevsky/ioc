@@ -23,7 +23,7 @@ namespace InversionOfControl
 		{
 			if (!interfaceType.IsInterface)
 			{
-				throw new InterfaceExpectedException();
+				throw new InterfaceExpectedException($"{interfaceType} is not an interface.");
 			}
 			if (!concreteType.IsClass || concreteType.IsAbstract)
 			{
@@ -31,7 +31,7 @@ namespace InversionOfControl
 			}
 			if (!interfaceType.IsAssignableFrom(concreteType))
 			{
-				throw new InheritanceException();
+				throw new InheritanceException($"{interfaceType} is not assignable from ${concreteType}");
 			}
 			if (singletonInstances.ContainsKey(interfaceType.FullName))
 			{
@@ -51,7 +51,7 @@ namespace InversionOfControl
 			object instance = null;
 			if (constructorsWithDependencies.Count() > 1)
 			{
-				throw new MultipleConstructorsException();
+				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
 			}
 			else if (constructorsWithDependencies.Count() == 0)
 			{
@@ -116,7 +116,7 @@ namespace InversionOfControl
 		{
 			if (!configurations.ContainsKey(type.FullName))
 			{
-				throw new DependencyNotRegisteredException();
+				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
 			}
 			var lifeCycleType = configurations[type.FullName];
 			if (lifeCycleType == LifecycleType.Transient)
