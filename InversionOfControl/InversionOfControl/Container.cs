@@ -37,8 +37,6 @@ namespace InversionOfControl
 			{
 				return;
 			}
-
-			var constructorParameters = new List<Type>();
 			object instance = CreateInstance(lifeCycleType, concreteType);
 
 			singletonInstances.Add(interfaceType.FullName, instance);
