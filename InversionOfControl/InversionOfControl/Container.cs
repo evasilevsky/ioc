@@ -1,11 +1,14 @@
-﻿using InversionOfControl.Interfaces;
+﻿using InversionOfControl.Exceptions;
+using InversionOfControl.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
-
+		private List<Dependency> configurations = new List<Dependency>();
 		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Transient)
 		{
 			var interfaceType = typeof(T);
@@ -17,7 +20,16 @@ namespace InversionOfControl
 		{
 
 			var resolver = ResolverFactory.Get(lifeCycleType);
-			resolver.RegisterDependency(new Dependency(interfaceType, concreteType, lifeCycleType));
+			configurations.Add(new Dependency(interfaceType, concreteType, lifeCycleType));
+			var existingDependency = configurations.FirstOrDefault(dep => dep.InterfaceType.FullName == interfaceType.FullName);
+			if (existingDependency == null)
+			{
+				configurations.Add(new Dependency(interfaceType, concreteType, lifeCycleType));
+			}
+			else if (existingDependency.LifecycleType != lifeCycleType)
+			{
+				throw new DependencyAlreadyRegisteredException($"Trying to register {interfaceType.FullName} with {lifeCycleType.ToString()} life cycle, but it was already registered with {existingDependency.LifecycleType.ToString()}. ");
+			}
 		}	
 
 		public object Resolve<T>()
@@ -28,17 +40,13 @@ namespace InversionOfControl
 
 		public object Resolve(Type interfaceType)
 		{
-			var resolvers = ResolverFactory.GetAll();
-			Resolver foundResolver = null;
-			foreach (var resolver in resolvers)
+			var dependency = configurations.FirstOrDefault(dep => dep.EqualsType(interfaceType));
+			if (dependency == null)
 			{
-				if (resolver.ContainsType(interfaceType))
-				{
-					foundResolver = resolver;
-				}
+				throw new DependencyNotRegisteredException($"{interfaceType.FullName} did not get registered. ");
 			}
-			var dependency = foundResolver.GetDependencyByType(interfaceType);
-			return foundResolver.Resolve(dependency);
+			var resolver = ResolverFactory.Get(dependency.LifecycleType);
+			return resolver.Resolve(dependency);
 		}
 	}
 }

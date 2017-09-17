@@ -8,17 +8,11 @@ namespace InversionOfControl.Interfaces
 {
 	public abstract class Resolver
 	{
-		private Dictionary<string, Dependency> configurations = new Dictionary<string, Dependency>();
 		private Dictionary<LifecycleType, Resolver> resolvers = new Dictionary<LifecycleType, Resolver>();
 		public abstract object Resolve(Dependency dependency);
 		public abstract LifecycleType LifecycleType { get; }
 		public Resolver()
 		{
-		}
-
-		public bool ContainsType(Type type)
-		{
-			return configurations.ContainsKey(type.FullName);
 		}
 		
 		public Dependency GetDependencyByType(Type type)
@@ -29,30 +23,7 @@ namespace InversionOfControl.Interfaces
 			}
 			return configurations[type.FullName];
 		}
-
-		public Resolver Get(Type type)
-		{
-			if (!configurations.ContainsKey(type.FullName))
-			{
-				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
-			}
-			var dependency = configurations[type.FullName];
-			return ResolverFactory.Get(dependency.LifecycleType);
-		}
-
-		public void RegisterDependency(Dependency dependency)
-		{
-			if (!configurations.ContainsKey(dependency.InterfaceType.FullName))
-			{
-				configurations.Add(dependency.InterfaceType.FullName, dependency);
-			}
-			else if (configurations[dependency.InterfaceType.FullName].LifecycleType != dependency.LifecycleType)
-			{
-				var registeredDependency = configurations[dependency.InterfaceType.FullName];
-				throw new DependencyAlreadyRegisteredException($"Trying to register {dependency.InterfaceType.FullName} with {dependency.LifecycleType.ToString()} life cycle, but it was already registered with {registeredDependency.LifecycleType.ToString()}. ");
-			}
-		}
-
+		
 		protected object CreateInstance(Type concreteType)
 		{
 			var constructors = concreteType.GetConstructors();
