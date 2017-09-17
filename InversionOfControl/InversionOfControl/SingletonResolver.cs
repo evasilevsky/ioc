@@ -1,17 +1,15 @@
-﻿using InversionOfControl.Exceptions;
-using InversionOfControl.Interfaces;
-using System;
+﻿using InversionOfControl.Interfaces;
 using System.Collections.Generic;
 
 namespace InversionOfControl
 {
 	public class SingletonResolver : Resolver
 	{
+		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
 		public SingletonResolver(ResolverRepository resolverFactory) : base(resolverFactory)
 		{
 
 		}
-		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
 		public override object Resolve(Dependency dependency)
 		{
 			var concreteType = dependency.ConcreteType;
