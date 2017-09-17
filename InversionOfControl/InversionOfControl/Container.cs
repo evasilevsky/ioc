@@ -8,8 +8,6 @@ namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
-		private Dictionary<string, LifecycleType> configurations = new Dictionary<string, LifecycleType>();
-		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
 		private ResolverFactory resolverFactory = new ResolverFactory();
 
 		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
@@ -32,10 +30,6 @@ namespace InversionOfControl
 			if (!interfaceType.IsAssignableFrom(concreteType))
 			{
 				throw new InheritanceException($"{interfaceType} is not assignable from {concreteType}");
-			}
-			if (singletonInstances.ContainsKey(interfaceType.FullName))
-			{
-				return;
 			}
 			var constructors = concreteType.GetConstructors();
 			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);

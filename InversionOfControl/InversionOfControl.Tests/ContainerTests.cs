@@ -80,25 +80,6 @@ namespace InversionOfControl.Tests
 				});
 				Assert.Contains($"{typeof(IDefaultConstructor).FullName} did not get registered. ", exception.Message);
 			}
-
-			[Fact]
-			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
-			{
-				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
-				systemUnderTest.Register<IOneDependencyWithDefaultConstructor, OneDependencyWithDefaultConstructor>();
-				var result = systemUnderTest.Resolve<IOneDependencyWithDefaultConstructor>();
-				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
-			}
-
-			[Fact]
-			public void ResolvesDependency_WhenItHasADependencyWithADependency()
-			{
-				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
-				systemUnderTest.Register<IOneDependencyWithDefaultConstructor, OneDependencyWithDefaultConstructor>();
-				systemUnderTest.Register<IDependencyWithDependency, DependencyWithDependency>();
-				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
-				Assert.IsType<DependencyWithDependency>(result);
-			}
 		}
 
 	}

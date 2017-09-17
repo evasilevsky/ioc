@@ -35,9 +35,19 @@ namespace InversionOfControl.Tests
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
 			{
 				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Singleton);
+				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Transient);
 				var result = systemUnderTest.Resolve<IOneDependencyWithDefaultConstructor>();
 				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
+			}
+			[Fact]
+			public void ResolvesDependency_WhenItHasADependencyWithADependency()
+			{
+				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(typeof(IDependencyWithDependency), LifecycleType.Transient);
+				
+				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
+				Assert.IsType<DependencyWithDependency>(result);
 			}
 		}
 		public class Resolve : TransientResolverTests
@@ -65,6 +75,16 @@ namespace InversionOfControl.Tests
 				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Singleton);
 				var result = systemUnderTest.Resolve(typeof(IOneDependencyWithDefaultConstructor));
 				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
+			}
+			[Fact]
+			public void ResolvesDependency_WhenItHasADependencyWithADependency()
+			{
+				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(typeof(IDependencyWithDependency), LifecycleType.Transient);
+
+				var result = systemUnderTest.Resolve(typeof (IDependencyWithDependency));
+				Assert.IsType<DependencyWithDependency>(result);
 			}
 		}
 	}
