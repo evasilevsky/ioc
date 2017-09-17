@@ -80,6 +80,14 @@ namespace InversionOfControl.Tests
 				});
 				Assert.Contains($"{typeof(IDefaultConstructor).FullName} did not get registered. ", exception.Message);
 			}
+			[Fact]
+			public void Resolves_WithTwoDependencies()
+			{
+				systemUnderTest.Register<IUsersController, UsersController>();
+				systemUnderTest.Register<ICalculator, Calculator>();
+				systemUnderTest.Register<IEmailService, EmailService>();
+				var result = systemUnderTest.Resolve<IUsersController>();
+			}
 		}
 
 	}

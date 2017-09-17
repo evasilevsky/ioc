@@ -46,10 +46,10 @@ namespace InversionOfControl
 			return Resolve(type);
 		}
 
-		public object Resolve(Type type)
+		public object Resolve(Type interfaceType)
 		{
-			var resolver = resolverFactory.Get(type);
-			return resolver.Resolve(type);
+			var resolver = resolverFactory.Get(interfaceType);
+			return resolver.Resolve(interfaceType);
 		}
 	}
 }
