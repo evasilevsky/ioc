@@ -18,6 +18,12 @@ namespace InversionOfControl
 			LifecycleType = lifecycleType;
 			Validate();
 		}
+
+		public bool EqualsType(Type typeToCompare)
+		{
+			return InterfaceType.FullName == typeToCompare.FullName;
+		}
+
 		private void Validate()
 		{
 			if (!InterfaceType.IsInterface)

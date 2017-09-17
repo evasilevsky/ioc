@@ -5,11 +5,13 @@ namespace InversionOfControl
 {
 	public class TransientResolver : Resolver
 	{
-		public TransientResolver(ResolverRepository resolverFactory) : base(resolverFactory)
+		public TransientResolver()
 		{
 
 		}
-		
+
+		public override LifecycleType LifecycleType => LifecycleType.Transient;
+
 		public override object Resolve(Dependency dependency)
 		{
 			var concreteType = dependency.ConcreteType;

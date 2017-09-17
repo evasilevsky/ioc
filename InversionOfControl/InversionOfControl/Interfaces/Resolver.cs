@@ -7,14 +7,52 @@ using System.Reflection;
 namespace InversionOfControl.Interfaces
 {
 	public abstract class Resolver
-    {
+	{
+		private Dictionary<string, Dependency> configurations = new Dictionary<string, Dependency>();
+		private Dictionary<LifecycleType, Resolver> resolvers = new Dictionary<LifecycleType, Resolver>();
 		public abstract object Resolve(Dependency dependency);
-		private ResolverRepository resolverFactory;
-		public Resolver(ResolverRepository resolverFactory)
+		public abstract LifecycleType LifecycleType { get; }
+		public Resolver()
 		{
-			this.resolverFactory = resolverFactory;
+		}
+
+		public bool ContainsType(Type type)
+		{
+			return configurations.ContainsKey(type.FullName);
 		}
 		
+		public Dependency GetDependencyByType(Type type)
+		{
+			if (!configurations.ContainsKey(type.FullName))
+			{
+				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
+			}
+			return configurations[type.FullName];
+		}
+
+		public Resolver Get(Type type)
+		{
+			if (!configurations.ContainsKey(type.FullName))
+			{
+				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
+			}
+			var dependency = configurations[type.FullName];
+			return ResolverFactory.Get(dependency.LifecycleType);
+		}
+
+		public void RegisterDependency(Dependency dependency)
+		{
+			if (!configurations.ContainsKey(dependency.InterfaceType.FullName))
+			{
+				configurations.Add(dependency.InterfaceType.FullName, dependency);
+			}
+			else if (configurations[dependency.InterfaceType.FullName].LifecycleType != dependency.LifecycleType)
+			{
+				var registeredDependency = configurations[dependency.InterfaceType.FullName];
+				throw new DependencyAlreadyRegisteredException($"Trying to register {dependency.InterfaceType.FullName} with {dependency.LifecycleType.ToString()} life cycle, but it was already registered with {registeredDependency.LifecycleType.ToString()}. ");
+			}
+		}
+
 		protected object CreateInstance(Type concreteType)
 		{
 			var constructors = concreteType.GetConstructors();
@@ -44,9 +82,9 @@ namespace InversionOfControl.Interfaces
 			foreach (var constructorParameter in constructorParameters)
 			{
 				object instanceDependency = null;
-				var dependency = resolverFactory.GetDependencyByType(constructorParameter.ParameterType);
+				var dependency = GetDependencyByType(constructorParameter.ParameterType);
 				var inheritedType = dependency.ConcreteType;
-				var resolver = resolverFactory.Get(constructorParameter.ParameterType);
+				var resolver = Get(constructorParameter.ParameterType);
 				instanceDependency = resolver.Resolve(dependency);
 				
 				instanceDependencies.Add(instanceDependency);

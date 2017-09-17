@@ -7,11 +7,9 @@ namespace InversionOfControl.Tests
 	public class TransientResolverTests
     {
 		private TransientResolver systemUnderTest;
-		private ResolverRepository resolverFactory;
 		public TransientResolverTests()
 		{
-			resolverFactory = new ResolverRepository();
-			systemUnderTest = new TransientResolver(resolverFactory);
+			systemUnderTest = new TransientResolver();
 		}
 		public class Resolve : TransientResolverTests
 		{
@@ -19,7 +17,7 @@ namespace InversionOfControl.Tests
 			public void ResolvesDifferentInstance()
 			{
 				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(dependency);
+				systemUnderTest.RegisterDependency(dependency);
 				var firstInstance = systemUnderTest.Resolve(dependency);
 				var secondInstance = systemUnderTest.Resolve(dependency);
 				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
@@ -29,7 +27,7 @@ namespace InversionOfControl.Tests
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
 			{
 				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(dependency);
+				systemUnderTest.RegisterDependency(dependency);
 				var result = systemUnderTest.Resolve(dependency);
 				Assert.IsType<DefaultConstructor>(result);
 			}
@@ -38,8 +36,8 @@ namespace InversionOfControl.Tests
 			{
 				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
 				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(defaultConstructorDependency);
-				resolverFactory.RegisterDependency(dependencyWithOneDependency);
+				systemUnderTest.RegisterDependency(defaultConstructorDependency);
+				systemUnderTest.RegisterDependency(dependencyWithOneDependency);
 				var result = systemUnderTest.Resolve(dependencyWithOneDependency);
 				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
 			}
@@ -49,9 +47,9 @@ namespace InversionOfControl.Tests
 				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
 				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
 				var dependencyWithDependency = new Dependency(typeof(IDependencyWithDependency), typeof(DependencyWithDependency), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(defaultConstructorDependency);
-				resolverFactory.RegisterDependency(dependencyWithOneDependency);
-				resolverFactory.RegisterDependency(dependencyWithDependency);
+				systemUnderTest.RegisterDependency(defaultConstructorDependency);
+				systemUnderTest.RegisterDependency(dependencyWithOneDependency);
+				systemUnderTest.RegisterDependency(dependencyWithDependency);
 
 				var result = systemUnderTest.Resolve(dependencyWithDependency);
 				Assert.IsType<DependencyWithDependency>(result);

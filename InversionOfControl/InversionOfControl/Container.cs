@@ -1,25 +1,23 @@
-﻿using InversionOfControl.Exceptions;
+﻿using InversionOfControl.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
-		private ResolverRepository resolverFactory = new ResolverRepository();
 
-		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
+		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Transient)
 		{
 			var interfaceType = typeof(T);
 			var secondType = typeof(U);
 			Register(interfaceType, secondType, lifecycleType);
 		}
 
-		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Singleton)
+		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Transient)
 		{
-			resolverFactory.RegisterDependency(new Dependency(interfaceType, concreteType, lifeCycleType));
+
+			var resolver = ResolverFactory.Get(lifeCycleType);
+			resolver.RegisterDependency(new Dependency(interfaceType, concreteType, lifeCycleType));
 		}	
 
 		public object Resolve<T>()
@@ -30,9 +28,17 @@ namespace InversionOfControl
 
 		public object Resolve(Type interfaceType)
 		{
-			var dependency = resolverFactory.GetDependencyByType(interfaceType);
-			var resolver = resolverFactory.Get(dependency.LifecycleType);
-			return resolver.Resolve(dependency);
+			var resolvers = ResolverFactory.GetAll();
+			Resolver foundResolver = null;
+			foreach (var resolver in resolvers)
+			{
+				if (resolver.ContainsType(interfaceType))
+				{
+					foundResolver = resolver;
+				}
+			}
+			var dependency = foundResolver.GetDependencyByType(interfaceType);
+			return foundResolver.Resolve(dependency);
 		}
 	}
 }

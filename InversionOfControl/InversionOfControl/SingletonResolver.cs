@@ -7,10 +7,11 @@ namespace InversionOfControl
 {
 	public class SingletonResolver : Resolver
 	{
-		public SingletonResolver(ResolverRepository resolverFactory) : base(resolverFactory)
+		public SingletonResolver()
 		{
 
 		}
+		public override LifecycleType LifecycleType => LifecycleType.Transient;
 		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
 		public override object Resolve(Dependency dependency)
 		{
