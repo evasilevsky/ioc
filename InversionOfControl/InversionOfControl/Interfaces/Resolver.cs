@@ -28,13 +28,13 @@ namespace InversionOfControl.Interfaces
 			else if (constructorsWithDependencies.Count() != 0)
 			{
 				var dependencies = constructorsWithDependencies.ToArray()[0].GetParameters();
-				instanceDependencies = GetInstanceDependenciesByType(dependencies);
+				instanceDependencies = GetInstanceDependenciesByType(dependencies).ToArray();
 			}
 			instance = Activator.CreateInstance(concreteType, instanceDependencies);
 			return instance;
 		}
 
-		private object[] GetInstanceDependenciesByType(ParameterInfo[] constructorParameters)
+		private IEnumerable<object> GetInstanceDependenciesByType(ParameterInfo[] constructorParameters)
 		{
 			var instanceDependencies = new List<object>();
 			foreach (var constructorParameter in constructorParameters)
@@ -44,10 +44,8 @@ namespace InversionOfControl.Interfaces
 				var inheritedType = dependency.ConcreteType;
 				var resolver = resolverFactory.Get(constructorParameter.ParameterType);
 				instanceDependency = resolver.Resolve(dependency);
-				
-				instanceDependencies.Add(instanceDependency);
+				yield return instanceDependency;
 			}
-			return instanceDependencies.ToArray();
 		}
 
 	}
