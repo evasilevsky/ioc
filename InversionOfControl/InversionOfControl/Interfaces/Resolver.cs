@@ -63,7 +63,7 @@ namespace InversionOfControl.Interfaces
 				object instanceDependency = null;
 				
 				var inheritedType = GetInheritedType(dependency.ParameterType);
-				var resolver = resolverFactory.Create(dependency.ParameterType);
+				var resolver = resolverFactory.Get(dependency.ParameterType);
 				instanceDependency = resolver.Resolve(dependency.ParameterType);
 				
 				instanceDependencies.Add(instanceDependency);

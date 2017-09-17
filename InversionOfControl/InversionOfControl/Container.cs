@@ -54,7 +54,7 @@ namespace InversionOfControl
 
 		public object Resolve(Type type)
 		{
-			var resolver = resolverFactory.Create(type);
+			var resolver = resolverFactory.Get(type);
 			return resolver.Resolve(type);
 		}
 	}
