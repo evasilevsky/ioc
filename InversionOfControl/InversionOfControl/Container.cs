@@ -16,7 +16,6 @@ namespace InversionOfControl
 			var interfaceType = typeof(T);
 			var secondType = typeof(U);
 			Register(interfaceType, secondType, lifecycleType);
-			configurations.Add(interfaceType.FullName, lifecycleType);
 		}
 
 		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Singleton)
@@ -37,9 +36,13 @@ namespace InversionOfControl
 			{
 				return;
 			}
-			object instance = CreateInstance(lifeCycleType, concreteType);
-
-			singletonInstances.Add(interfaceType.FullName, instance);
+			var constructors = concreteType.GetConstructors();
+			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
+			if (constructorsWithDependencies.Count() > 1)
+			{
+				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
+			}
+			configurations.Add(interfaceType.FullName, lifeCycleType);
 		}
 
 		private object CreateInstance(LifecycleType lifecycleType, Type concreteType)
@@ -79,8 +82,7 @@ namespace InversionOfControl
 				else
 				{
 					var inheritedType = GetInheritedType(dependency.ParameterType);
-					Register(dependency.GetType(), inheritedType);
-					instanceDependency = Resolve(dependency.GetType());
+					instanceDependency = Resolve(dependency.ParameterType);
 				}
 				instanceDependencies.Add(instanceDependency);
 			}
@@ -117,16 +119,16 @@ namespace InversionOfControl
 				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
 			}
 			var lifeCycleType = configurations[type.FullName];
+			var concreteType = GetInheritedType(type);
 			if (lifeCycleType == LifecycleType.Transient)
 			{
-				var concreteType = GetInheritedType(type);
 				return CreateInstance(lifeCycleType, concreteType);
 			}
 			else if (lifeCycleType == LifecycleType.Singleton)
 			{
 				if (!singletonInstances.ContainsKey(type.FullName))
 				{
-					var singletonInstance = CreateInstance(lifeCycleType, type);
+					var singletonInstance = CreateInstance(lifeCycleType, concreteType);
 					singletonInstances.Add(type.FullName, singletonInstance);
 				}
 			}
