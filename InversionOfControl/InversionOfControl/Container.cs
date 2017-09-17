@@ -1,8 +1,4 @@
-﻿using InversionOfControl.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System;
 
 namespace InversionOfControl
 {
@@ -10,14 +6,14 @@ namespace InversionOfControl
 	{
 		private ResolverRepository resolverFactory = new ResolverRepository();
 
-		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
+		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Transient)
 		{
 			var interfaceType = typeof(T);
 			var secondType = typeof(U);
 			Register(interfaceType, secondType, lifecycleType);
 		}
 
-		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Singleton)
+		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Transient)
 		{
 			resolverFactory.RegisterDependency(new Dependency(interfaceType, concreteType, lifeCycleType));
 		}	

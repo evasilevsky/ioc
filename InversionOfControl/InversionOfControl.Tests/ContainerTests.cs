@@ -91,6 +91,15 @@ namespace InversionOfControl.Tests
 			}
 
 			[Fact]
+			public void DefaultToUseTransient_WhenRegisteringDependencies()
+			{
+				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>();
+				var firstInstance = systemUnderTest.Resolve<IDefaultConstructor>();
+				var secondInstance = systemUnderTest.Resolve<IDefaultConstructor>();
+				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
+			}
+
+			[Fact]
 			public void Resolves_TypeWithTwoSubclasses()
 			{
 				systemUnderTest.Register<IDefaultConstructor, AnotherDefaultConstructor>();
