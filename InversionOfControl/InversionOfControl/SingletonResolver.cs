@@ -7,7 +7,7 @@ namespace InversionOfControl
 {
 	public class SingletonResolver : Resolver
 	{
-		public SingletonResolver(ResolverFactory resolverFactory) : base(resolverFactory)
+		public SingletonResolver(ResolverRepository resolverFactory) : base(resolverFactory)
 		{
 
 		}

@@ -9,8 +9,8 @@ namespace InversionOfControl.Interfaces
 	public abstract class Resolver
     {
 		public abstract object Resolve(Dependency dependency);
-		private ResolverFactory resolverFactory;
-		public Resolver(ResolverFactory resolverFactory)
+		private ResolverRepository resolverFactory;
+		public Resolver(ResolverRepository resolverFactory)
 		{
 			this.resolverFactory = resolverFactory;
 		}

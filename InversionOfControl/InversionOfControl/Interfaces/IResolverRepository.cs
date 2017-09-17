@@ -2,7 +2,7 @@
 
 namespace InversionOfControl.Interfaces
 {
-	public interface IResolverFactory
+	public interface IResolverRepository
     {
 		void RegisterDependency(Dependency dependency);
 		Resolver Get(LifecycleType lifecycleType);

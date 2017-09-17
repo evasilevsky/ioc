@@ -8,10 +8,10 @@ namespace InversionOfControl.Tests
     {
 		private const LifecycleType LIFECYCLE_TYPE = LifecycleType.Singleton;
 		private SingletonResolver systemUnderTest;
-		private ResolverFactory resolverFactory;
+		private ResolverRepository resolverFactory;
 		public SingletonResolverTests()
 		{
-			resolverFactory = new ResolverFactory();
+			resolverFactory = new ResolverRepository();
 			systemUnderTest = new SingletonResolver(resolverFactory);
 		}
 		public class Resolve : SingletonResolverTests

@@ -8,7 +8,7 @@ namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
-		private ResolverFactory resolverFactory = new ResolverFactory();
+		private ResolverRepository resolverFactory = new ResolverRepository();
 
 		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
 		{

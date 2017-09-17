@@ -6,10 +6,10 @@ namespace InversionOfControl.Tests
 {
 	public class ResolverFactoryTests
     {
-		private ResolverFactory systemUnderTest;
+		private ResolverRepository systemUnderTest;
 		public ResolverFactoryTests()
 		{
-			systemUnderTest = new ResolverFactory();
+			systemUnderTest = new ResolverRepository();
 		}
 
 		public class CreateByLifeCycleType : ResolverFactoryTests

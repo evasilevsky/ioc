@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace InversionOfControl
 {
-	public class ResolverFactory : IResolverFactory
+	public class ResolverRepository : IResolverRepository
 	{
 		private Dictionary<string, Dependency> configurations = new Dictionary<string, Dependency>();
 		private Dictionary<LifecycleType, Resolver> resolvers = new Dictionary<LifecycleType, Resolver>();

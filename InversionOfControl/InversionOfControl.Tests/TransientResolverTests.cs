@@ -7,10 +7,10 @@ namespace InversionOfControl.Tests
 	public class TransientResolverTests
     {
 		private TransientResolver systemUnderTest;
-		private ResolverFactory resolverFactory;
+		private ResolverRepository resolverFactory;
 		public TransientResolverTests()
 		{
-			resolverFactory = new ResolverFactory();
+			resolverFactory = new ResolverRepository();
 			systemUnderTest = new TransientResolver(resolverFactory);
 		}
 		public class Resolve : TransientResolverTests

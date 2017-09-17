@@ -5,7 +5,7 @@ namespace InversionOfControl
 {
 	public class TransientResolver : Resolver
 	{
-		public TransientResolver(ResolverFactory resolverFactory) : base(resolverFactory)
+		public TransientResolver(ResolverRepository resolverFactory) : base(resolverFactory)
 		{
 
 		}
