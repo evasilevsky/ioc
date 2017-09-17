@@ -30,6 +30,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IDefaultConstructor, IDefaultConstructor>();
 				});
+				Assert.Contains(" is abstract or not a class. ", exception.Message);
 			}
 			[Fact]
 			public void ThrowsClassExpectedException_WhenSecondTypeIsAbstract()
@@ -38,6 +39,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IDefaultConstructor, D>();
 				});
+				Assert.Contains(" is abstract or not a class. ", exception.Message);
 			}
 			[Fact]
 			public void ThrowsInheritanceException_WhenSecondTypeDoesNotInheritFromFirst()
@@ -116,18 +118,6 @@ namespace InversionOfControl.Tests
 				systemUnderTest.Register<IDependencyWithDependency, DependencyWithDependency>();
 				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
 				Assert.IsType<DependencyWithDependency>(result);
-			}
-
-
-			[Fact(Skip = "This fails because the search for an inherited dependency results in ICircularDependency1.IsSubclassOf(CircularDependency1) equal to false")]
-			public void ResolvesDependency_WhenItHasACircularDependency()
-			{
-				systemUnderTest.Register<ICircularDependency1, CircularDependency1>();
-				systemUnderTest.Register<ICircularDependency2, CircularDependency2>();
-				var circularResult1 = systemUnderTest.Resolve<ICircularDependency1>();
-				var circularResult2 = systemUnderTest.Resolve<ICircularDependency2>();
-				Assert.IsType<CircularDependency1>(circularResult1);
-				Assert.IsType<CircularDependency1>(circularResult2);
 			}
 		}
 

@@ -27,7 +27,7 @@ namespace InversionOfControl
 			}
 			if (!concreteType.IsClass || concreteType.IsAbstract)
 			{
-				throw new ConcreteClassExpectedException();
+				throw new ConcreteClassExpectedException($"{concreteType.FullName} is abstract or not a class. ");
 			}
 			if (!interfaceType.IsAssignableFrom(concreteType))
 			{
