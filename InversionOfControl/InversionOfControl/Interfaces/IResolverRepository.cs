@@ -7,5 +7,7 @@ namespace InversionOfControl.Interfaces
 		void RegisterDependency(Dependency dependency);
 		Resolver Get(LifecycleType lifecycleType);
 		Resolver Get(Type type);
-    }
+		Dependency GetDependencyByType(Type type);
+
+	}
 }

@@ -9,10 +9,10 @@ namespace InversionOfControl.Interfaces
 	public abstract class Resolver
     {
 		public abstract object Resolve(Dependency dependency);
-		private ResolverRepository resolverFactory;
-		public Resolver(ResolverRepository resolverFactory)
+		private IResolverRepository resolverRepository;
+		public Resolver(IResolverRepository resolverRepository)
 		{
-			this.resolverFactory = resolverFactory;
+			this.resolverRepository = resolverRepository;
 		}
 		
 		protected object CreateInstance(Type concreteType)
@@ -40,9 +40,9 @@ namespace InversionOfControl.Interfaces
 			foreach (var constructorParameter in constructorParameters)
 			{
 				object instanceDependency = null;
-				var dependency = resolverFactory.GetDependencyByType(constructorParameter.ParameterType);
+				var dependency = resolverRepository.GetDependencyByType(constructorParameter.ParameterType);
 				var inheritedType = dependency.ConcreteType;
-				var resolver = resolverFactory.Get(constructorParameter.ParameterType);
+				var resolver = resolverRepository.Get(constructorParameter.ParameterType);
 				instanceDependency = resolver.Resolve(dependency);
 				yield return instanceDependency;
 			}

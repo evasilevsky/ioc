@@ -6,7 +6,7 @@ namespace InversionOfControl
 	public class SingletonResolver : Resolver
 	{
 		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
-		public SingletonResolver(ResolverRepository resolverFactory) : base(resolverFactory)
+		public SingletonResolver(IResolverRepository resolverFactory) : base(resolverFactory)
 		{
 
 		}
