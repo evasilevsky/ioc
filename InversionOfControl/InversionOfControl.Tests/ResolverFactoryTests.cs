@@ -14,7 +14,16 @@ namespace InversionOfControl.Tests
 
 		public class CreateByLifeCycleType : ResolverFactoryTests
 		{
-			
+			[Theory]
+			[InlineData(LifecycleType.Singleton)]
+			[InlineData(LifecycleType.Transient)]
+			public void ReturnsSameResolver(LifecycleType lifecycleType)
+			{
+				systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), lifecycleType);
+				var firstResolver = systemUnderTest.Get(lifecycleType);
+				var secondResolver = systemUnderTest.Get(lifecycleType);
+				Assert.Equal(firstResolver, secondResolver);
+			}
 		}
 
 		public class CreateByType : ResolverFactoryTests
@@ -28,6 +37,16 @@ namespace InversionOfControl.Tests
 				var firstResolver = systemUnderTest.Get(lifecycleType);
 				var secondResolver = systemUnderTest.Get(lifecycleType);
 				Assert.Equal(firstResolver, secondResolver);
+			}
+
+			[Fact]
+			public void ThrowsDependencyNotRegisteredException()
+			{
+				var exception = Assert.Throws<DependencyNotRegisteredException>(() =>
+				{
+					systemUnderTest.Get(typeof (IDefaultConstructor));
+				});
+				Assert.Contains($"{typeof(IDefaultConstructor).FullName} did not get registered. ", exception.Message);
 			}
 		}
 
