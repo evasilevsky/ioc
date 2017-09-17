@@ -4,15 +4,15 @@ using Xunit;
 
 namespace InversionOfControl.Tests
 {
-	public class ResolverFactoryTests
+	public class ResolverRepositoryTests
     {
 		private ResolverRepository systemUnderTest;
-		public ResolverFactoryTests()
+		public ResolverRepositoryTests()
 		{
 			systemUnderTest = new ResolverRepository();
 		}
 
-		public class CreateByLifeCycleType : ResolverFactoryTests
+		public class CreateByLifeCycleType : ResolverRepositoryTests
 		{
 			[Theory]
 			[InlineData(LifecycleType.Singleton)]
@@ -27,7 +27,7 @@ namespace InversionOfControl.Tests
 			}
 		}
 
-		public class CreateByType : ResolverFactoryTests
+		public class CreateByType : ResolverRepositoryTests
 		{
 			[Theory]
 			[InlineData(LifecycleType.Singleton)]
@@ -52,7 +52,7 @@ namespace InversionOfControl.Tests
 			}
 		}
 
-		public class RegisterDependency : ResolverFactoryTests
+		public class RegisterDependency : ResolverRepositoryTests
 		{
 			[Theory]
 			[InlineData(LifecycleType.Singleton)]
