@@ -12,20 +12,15 @@ namespace InversionOfControl
 
 		}
 		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
-		public override object Resolve(Type interfaceType)
+		public override object Resolve(Dependency dependency)
 		{
-			var concreteType = GetInheritedType(interfaceType);
-			if (!singletonInstances.ContainsKey(interfaceType.FullName))
+			var concreteType = dependency.ConcreteType;
+			if (!singletonInstances.ContainsKey(dependency.InterfaceType.FullName))
 			{
 				var singletonInstance = CreateInstance(concreteType);
-				singletonInstances.Add(interfaceType.FullName, singletonInstance);
+				singletonInstances.Add(dependency.InterfaceType.FullName, singletonInstance);
 			}
-			return singletonInstances[interfaceType.FullName];
-		}
-
-		public override object Resolve<T>()
-		{
-			return Resolve(typeof(T));
+			return singletonInstances[dependency.InterfaceType.FullName];
 		}
 	}
 }

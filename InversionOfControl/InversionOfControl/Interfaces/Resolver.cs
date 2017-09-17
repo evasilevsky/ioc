@@ -8,8 +8,7 @@ namespace InversionOfControl.Interfaces
 {
 	public abstract class Resolver
     {
-		public abstract object Resolve(Type interfaceType);
-		public abstract object Resolve<T>();
+		public abstract object Resolve(Dependency dependency);
 		private ResolverFactory resolverFactory;
 		public Resolver(ResolverFactory resolverFactory)
 		{
@@ -39,33 +38,16 @@ namespace InversionOfControl.Interfaces
 			return instance;
 		}
 
-		protected Type GetInheritedType(Type interfaceType)
-		{
-			if (!interfaceType.IsInterface)
-			{
-				throw new InterfaceExpectedException();
-			}
-			var inheritedTypes = AppDomain.CurrentDomain.GetAssemblies()
-				.SelectMany(assembly => assembly.GetTypes())
-				.Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface)
-				.ToList();
-			if (inheritedTypes.Count() != 1)
-			{
-				throw new Exception();
-			}
-			return inheritedTypes[0];
-		}
-
-		private object[] GetInstanceDependenciesByType(ParameterInfo[] dependencies)
+		private object[] GetInstanceDependenciesByType(ParameterInfo[] constructorParameters)
 		{
 			var instanceDependencies = new List<object>();
-			foreach (var dependency in dependencies)
+			foreach (var constructorParameter in constructorParameters)
 			{
 				object instanceDependency = null;
-				
-				var inheritedType = GetInheritedType(dependency.ParameterType);
-				var resolver = resolverFactory.Get(dependency.ParameterType);
-				instanceDependency = resolver.Resolve(dependency.ParameterType);
+				var dependency = resolverFactory.GetDependencyByType(constructorParameter.ParameterType);
+				var inheritedType = dependency.ConcreteType;
+				var resolver = resolverFactory.Get(constructorParameter.ParameterType);
+				instanceDependency = resolver.Resolve(dependency);
 				
 				instanceDependencies.Add(instanceDependency);
 			}

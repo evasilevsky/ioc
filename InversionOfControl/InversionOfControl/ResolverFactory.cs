@@ -28,6 +28,12 @@ namespace InversionOfControl
 			}
 			return resolvers[lifecycleType];
 		}
+
+		public Dependency GetDependencyByType(Type type)
+		{
+			return configurations[type.FullName];
+		}
+
 		public Resolver Get(Type type)
 		{
 			if (!configurations.ContainsKey(type.FullName))

@@ -9,14 +9,10 @@ namespace InversionOfControl
 		{
 
 		}
-
-		public override object Resolve<T>()
+		
+		public override object Resolve(Dependency dependency)
 		{
-			return Resolve(typeof(T));
-		}
-		public override object Resolve(Type interfaceType)
-		{
-			var concreteType = GetInheritedType(interfaceType);
+			var concreteType = dependency.ConcreteType;
 			return CreateInstance(concreteType);
 		}
 	}

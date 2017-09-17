@@ -30,8 +30,9 @@ namespace InversionOfControl
 
 		public object Resolve(Type interfaceType)
 		{
-			var resolver = resolverFactory.Get(interfaceType);
-			return resolver.Resolve(interfaceType);
+			var dependency = resolverFactory.GetDependencyByType(interfaceType);
+			var resolver = resolverFactory.Get(dependency.LifecycleType);
+			return resolver.Resolve(dependency);
 		}
 	}
 }
