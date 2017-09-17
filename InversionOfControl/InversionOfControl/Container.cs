@@ -10,6 +10,7 @@ namespace InversionOfControl
 	{
 		private Dictionary<string, LifecycleType> configurations = new Dictionary<string, LifecycleType>();
 		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
+		private ResolverFactory resolverFactory = new ResolverFactory();
 
 		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
 		{
@@ -42,7 +43,7 @@ namespace InversionOfControl
 			{
 				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
 			}
-			configurations.Add(interfaceType.FullName, lifeCycleType);
+			resolverFactory.RegisterDependency(interfaceType, lifeCycleType);
 		}	
 
 		public object Resolve<T>()
@@ -53,25 +54,8 @@ namespace InversionOfControl
 
 		public object Resolve(Type type)
 		{
-			if (!configurations.ContainsKey(type.FullName))
-			{
-				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
-			}
-			var lifeCycleType = configurations[type.FullName];
-			var concreteType = GetInheritedType(type);
-			if (lifeCycleType == LifecycleType.Transient)
-			{
-				return CreateInstance(lifeCycleType, concreteType);
-			}
-			else if (lifeCycleType == LifecycleType.Singleton)
-			{
-				if (!singletonInstances.ContainsKey(type.FullName))
-				{
-					var singletonInstance = CreateInstance(lifeCycleType, concreteType);
-					singletonInstances.Add(type.FullName, singletonInstance);
-				}
-			}
-			return singletonInstances[type.FullName];
+			var resolver = resolverFactory.Create(type);
+			return resolver.Resolve(type);
 		}
 	}
 }

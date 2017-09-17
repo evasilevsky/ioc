@@ -9,15 +9,12 @@ namespace InversionOfControl.Interfaces
 	public abstract class Resolver
     {
 		public abstract object Resolve(Type interfaceType);
-
-		protected void Validate(Type type)
+		private ResolverFactory resolverFactory;
+		public Resolver(ResolverFactory resolverFactory)
 		{
-			if (!configurations.ContainsKey(type.FullName))
-			{
-				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
-			}
+			this.resolverFactory = resolverFactory;
 		}
-
+		
 		protected object CreateInstance(Type concreteType)
 		{
 			var constructors = concreteType.GetConstructors();
@@ -64,16 +61,11 @@ namespace InversionOfControl.Interfaces
 			foreach (var dependency in dependencies)
 			{
 				object instanceDependency = null;
-
-				if (singletonInstances.ContainsKey(dependency.ParameterType.FullName))
-				{
-					instanceDependency = singletonInstances[dependency.ParameterType.FullName];
-				}
-				else
-				{
-					var inheritedType = GetInheritedType(dependency.ParameterType);
-					instanceDependency = Resolve(dependency.ParameterType);
-				}
+				
+				var inheritedType = GetInheritedType(dependency.ParameterType);
+				var resolver = resolverFactory.Create(dependency.ParameterType);
+				instanceDependency = resolver.Resolve(dependency.ParameterType);
+				
 				instanceDependencies.Add(instanceDependency);
 			}
 			return instanceDependencies.ToArray();
