@@ -2,7 +2,6 @@
 {
 	public interface IContainer
     {
-		void Register<T, U> ();
 		void Register<T, U>(LifecycleType lifecycleType);
 		object Resolve<T>();
 	}

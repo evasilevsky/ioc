@@ -8,16 +8,16 @@ namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
-		private Dictionary<string, object> concreteObjects = new Dictionary<string, object>();
+		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
 
-		public void Register<T, U>()
+		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
 		{
 			var interfaceType = typeof(T);
 			var secondType = typeof(U);
-			Register(interfaceType, secondType);
+			Register(interfaceType, secondType, lifecycleType);
 		}
 
-		private void Register(Type interfaceType, Type concreteType)
+		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Singleton)
 		{
 			if (!interfaceType.IsInterface)
 			{
@@ -31,16 +31,22 @@ namespace InversionOfControl
 			{
 				throw new InheritanceException();
 			}
-			if (concreteObjects.ContainsKey(interfaceType.Name))
+			if (singletonInstances.ContainsKey(interfaceType.Name))
 			{
 				return;
 			}
-			var constructors = concreteType.GetConstructors();
-			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
 
 			var constructorParameters = new List<Type>();
-			object instance = null;
+			object instance = CreateInstance(lifeCycleType, concreteType);
 
+			singletonInstances.Add(interfaceType.FullName, instance);
+		}
+
+		private object CreateInstance(LifecycleType lifecycleType, Type concreteType)
+		{
+			var constructors = concreteType.GetConstructors();
+			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
+			object instance = null;
 			if (constructorsWithDependencies.Count() > 1)
 			{
 				throw new MultipleConstructorsException();
@@ -56,8 +62,7 @@ namespace InversionOfControl
 
 				instance = Activator.CreateInstance(concreteType, instanceDependencies);
 			}
-
-			concreteObjects.Add(interfaceType.FullName, instance);
+			return instance;
 		}
 
 		private object[] GetInstanceDependenciesByType(ParameterInfo[] dependencies)
@@ -67,9 +72,9 @@ namespace InversionOfControl
 			{
 				object instanceDependency = null;
 
-				if (concreteObjects.ContainsKey(dependency.ParameterType.FullName))
+				if (singletonInstances.ContainsKey(dependency.ParameterType.FullName))
 				{
-					instanceDependency = concreteObjects[dependency.ParameterType.FullName];
+					instanceDependency = singletonInstances[dependency.ParameterType.FullName];
 				}
 				else
 				{
@@ -97,11 +102,7 @@ namespace InversionOfControl
 			}
 			return inheritedTypes[0];
 		}
-
-		public void Register<T, U>(LifecycleType lifecycleType)
-		{
-			throw new NotImplementedException();
-		}
+		
 
 		public object Resolve<T>()
 		{
@@ -111,11 +112,11 @@ namespace InversionOfControl
 
 		public object Resolve(Type type)
 		{
-			if (!concreteObjects.ContainsKey(type.FullName))
+			if (!singletonInstances.ContainsKey(type.FullName))
 			{
 				throw new DependencyNotRegisteredException();
 			}
-			return concreteObjects[type.FullName];
+			return singletonInstances[type.FullName];
 		}
 	}
 }
