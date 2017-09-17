@@ -101,6 +101,15 @@ namespace InversionOfControl.Tests
 				Assert.IsType<DependencyWithDependency>(result);
 			}
 
+			[Fact]
+			public void ResolvesDifferentInstance_WhenDependencyIsTransient()
+			{
+				systemUnderTest.Register<IDefaultConstructor, DefaultConstructor>(LifecycleType.Transient);
+				var firstInstance = systemUnderTest.Resolve<IDefaultConstructor>();
+				var secondInstance = systemUnderTest.Resolve<IDefaultConstructor>();
+				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
+			}
+
 			[Fact(Skip = "If it isn't registered, this doesn't work")]
 			public void ResolvesDependency_WhenNoOtherDependenciesItUsesWereRegistered()
 			{

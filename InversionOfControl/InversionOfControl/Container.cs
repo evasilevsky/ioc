@@ -8,6 +8,7 @@ namespace InversionOfControl
 {
 	public class Container : IContainer
 	{
+		private Dictionary<string, LifecycleType> configurations = new Dictionary<string, LifecycleType>();
 		private Dictionary<string, object> singletonInstances = new Dictionary<string, object>();
 
 		public void Register<T, U>(LifecycleType lifecycleType = LifecycleType.Singleton)
@@ -15,6 +16,7 @@ namespace InversionOfControl
 			var interfaceType = typeof(T);
 			var secondType = typeof(U);
 			Register(interfaceType, secondType, lifecycleType);
+			configurations.Add(interfaceType.FullName, lifecycleType);
 		}
 
 		private void Register(Type interfaceType, Type concreteType, LifecycleType lifeCycleType = LifecycleType.Singleton)
@@ -31,7 +33,7 @@ namespace InversionOfControl
 			{
 				throw new InheritanceException();
 			}
-			if (singletonInstances.ContainsKey(interfaceType.Name))
+			if (singletonInstances.ContainsKey(interfaceType.FullName))
 			{
 				return;
 			}
@@ -94,7 +96,7 @@ namespace InversionOfControl
 			}
 			var inheritedTypes = AppDomain.CurrentDomain.GetAssemblies()
 				.SelectMany(assembly => assembly.GetTypes())
-				.Where(type => type.IsSubclassOf(interfaceType))
+				.Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface)
 				.ToList();
 			if (inheritedTypes.Count() != 1)
 			{
@@ -112,9 +114,23 @@ namespace InversionOfControl
 
 		public object Resolve(Type type)
 		{
-			if (!singletonInstances.ContainsKey(type.FullName))
+			if (!configurations.ContainsKey(type.FullName))
 			{
 				throw new DependencyNotRegisteredException();
+			}
+			var lifeCycleType = configurations[type.FullName];
+			if (lifeCycleType == LifecycleType.Transient)
+			{
+				var concreteType = GetInheritedType(type);
+				return CreateInstance(lifeCycleType, concreteType);
+			}
+			else if (lifeCycleType == LifecycleType.Singleton)
+			{
+				if (!singletonInstances.ContainsKey(type.FullName))
+				{
+					var singletonInstance = CreateInstance(lifeCycleType, type);
+					singletonInstances.Add(type.FullName, singletonInstance);
+				}
 			}
 			return singletonInstances[type.FullName];
 		}
