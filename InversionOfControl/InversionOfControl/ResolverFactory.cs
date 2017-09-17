@@ -7,7 +7,7 @@ namespace InversionOfControl
 {
 	public class ResolverFactory : IResolverFactory
 	{
-		private Dictionary<string, LifecycleType> configurations = new Dictionary<string, LifecycleType>();
+		private Dictionary<string, Dependency> configurations = new Dictionary<string, Dependency>();
 		private Dictionary<LifecycleType, Resolver> resolvers = new Dictionary<LifecycleType, Resolver>();
 		public Resolver Get(LifecycleType lifecycleType)
 		{
@@ -34,19 +34,19 @@ namespace InversionOfControl
 			{
 				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
 			}
-			var lifecycleType = configurations[type.FullName];
-			return Get(lifecycleType);
+			var dependency = configurations[type.FullName];
+			return Get(dependency.LifecycleType);
 		}
 
-		public void RegisterDependency(Type interfaceType, LifecycleType lifecycleType)
+		public void RegisterDependency(Dependency dependency)
 		{
-			if (!configurations.ContainsKey(interfaceType.FullName))
+			if (!configurations.ContainsKey(dependency.InterfaceType.FullName))
 			{
-				configurations.Add(interfaceType.FullName, lifecycleType);
+				configurations.Add(dependency.InterfaceType.FullName, dependency);
 			}
-			else if (configurations[interfaceType.FullName] != lifecycleType)
+			else if (configurations[dependency.InterfaceType.FullName].LifecycleType != dependency.LifecycleType)
 			{
-				throw new DependencyAlreadyRegisteredException($"Trying to register {interfaceType.FullName} with {lifecycleType.ToString()} life cycle, but it was already registered with {configurations[interfaceType.FullName].ToString()}. ");
+				throw new DependencyAlreadyRegisteredException($"Trying to register {dependency.InterfaceType.FullName} with {dependency.LifecycleType.ToString()} life cycle, but it was already registered with {configurations[dependency.InterfaceType.FullName].ToString()}. ");
 			}
 		}
 	}

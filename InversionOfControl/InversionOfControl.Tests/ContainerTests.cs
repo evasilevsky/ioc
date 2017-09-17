@@ -87,6 +87,15 @@ namespace InversionOfControl.Tests
 				systemUnderTest.Register<ICalculator, Calculator>();
 				systemUnderTest.Register<IEmailService, EmailService>();
 				var result = systemUnderTest.Resolve<IUsersController>();
+				Assert.IsType<UsersController>(result);
+			}
+
+			[Fact]
+			public void Resolves_TypeWithTwoSubclasses()
+			{
+				systemUnderTest.Register<IDefaultConstructor, AnotherDefaultConstructor>();
+				var result = systemUnderTest.Resolve<IUsersController>();
+				Assert.IsType<AnotherDefaultConstructor>(result);
 			}
 		}
 

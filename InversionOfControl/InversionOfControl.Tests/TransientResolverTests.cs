@@ -18,7 +18,8 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ResolvesDifferentInstance()
 			{
-				resolverFactory.RegisterDependency(typeof (IDefaultConstructor), LifecycleType.Transient);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(dependency);
 				var firstInstance = systemUnderTest.Resolve<IDefaultConstructor>();
 				var secondInstance = systemUnderTest.Resolve<IDefaultConstructor>();
 				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
@@ -27,24 +28,30 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(dependency);
 				var result = systemUnderTest.Resolve<IDefaultConstructor>();
 				Assert.IsType<DefaultConstructor>(result);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(defaultConstructorDependency);
+				resolverFactory.RegisterDependency(dependencyWithOneDependency);
 				var result = systemUnderTest.Resolve<IOneDependencyWithDefaultConstructor>();
 				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenItHasADependencyWithADependency()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IDependencyWithDependency), LifecycleType.Transient);
+				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				var dependencyWithDependency = new Dependency(typeof(IDependencyWithDependency), typeof(DependencyWithDependency), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(defaultConstructorDependency);
+				resolverFactory.RegisterDependency(dependencyWithOneDependency);
+				resolverFactory.RegisterDependency(dependencyWithDependency);
 				
 				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
 				Assert.IsType<DependencyWithDependency>(result);
@@ -55,7 +62,8 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ResolvesDifferentInstance()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(dependency);
 				var firstInstance = systemUnderTest.Resolve(typeof(IDefaultConstructor));
 				var secondInstance = systemUnderTest.Resolve(typeof(IDefaultConstructor));
 				Assert.NotEqual(firstInstance.GetHashCode(), secondInstance.GetHashCode());
@@ -64,26 +72,32 @@ namespace InversionOfControl.Tests
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(dependency);
 				var result = systemUnderTest.Resolve(typeof(IDefaultConstructor));
 				Assert.IsType<DefaultConstructor>(result);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithConstructorWithOneDependency()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Singleton);
+				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(defaultConstructorDependency);
+				resolverFactory.RegisterDependency(dependencyWithOneDependency);
 				var result = systemUnderTest.Resolve(typeof(IOneDependencyWithDefaultConstructor));
 				Assert.IsType<OneDependencyWithDefaultConstructor>(result);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenItHasADependencyWithADependency()
 			{
-				resolverFactory.RegisterDependency(typeof(IDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IOneDependencyWithDefaultConstructor), LifecycleType.Transient);
-				resolverFactory.RegisterDependency(typeof(IDependencyWithDependency), LifecycleType.Transient);
+				var defaultConstructorDependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), LifecycleType.Transient);
+				var dependencyWithOneDependency = new Dependency(typeof(IOneDependencyWithDefaultConstructor), typeof(OneDependencyWithDefaultConstructor), LifecycleType.Transient);
+				var dependencyWithDependency = new Dependency(typeof(IDependencyWithDependency), typeof(DependencyWithDependency), LifecycleType.Transient);
+				resolverFactory.RegisterDependency(defaultConstructorDependency);
+				resolverFactory.RegisterDependency(dependencyWithOneDependency);
+				resolverFactory.RegisterDependency(dependencyWithDependency);
 
-				var result = systemUnderTest.Resolve(typeof (IDependencyWithDependency));
+				var result = systemUnderTest.Resolve(typeof(IDependencyWithDependency));
 				Assert.IsType<DependencyWithDependency>(result);
 			}
 		}

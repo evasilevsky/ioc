@@ -19,7 +19,8 @@ namespace InversionOfControl.Tests
 			[InlineData(LifecycleType.Transient)]
 			public void ReturnsSameResolver(LifecycleType lifecycleType)
 			{
-				systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), lifecycleType);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), lifecycleType);
+				systemUnderTest.RegisterDependency(dependency);
 				var firstResolver = systemUnderTest.Get(lifecycleType);
 				var secondResolver = systemUnderTest.Get(lifecycleType);
 				Assert.Equal(firstResolver, secondResolver);
@@ -33,7 +34,8 @@ namespace InversionOfControl.Tests
 			[InlineData(LifecycleType.Transient)]
 			public void ReturnsSameResolver(LifecycleType lifecycleType)
 			{
-				systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), lifecycleType);
+				var dependency = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), lifecycleType);
+				systemUnderTest.RegisterDependency(dependency);
 				var firstResolver = systemUnderTest.Get(lifecycleType);
 				var secondResolver = systemUnderTest.Get(lifecycleType);
 				Assert.Equal(firstResolver, secondResolver);
@@ -57,22 +59,26 @@ namespace InversionOfControl.Tests
 			[InlineData(LifecycleType.Transient)]
 			public void DoesNotThrowException_WhenRegisteringDependencyMultipleTimes(LifecycleType lifecycleType)
 			{
-				systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), lifecycleType);
-				systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), lifecycleType);
+				var firstDependencyRegistered = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), lifecycleType);
+				var secondDependencyRegistered = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), lifecycleType);
+				systemUnderTest.RegisterDependency(firstDependencyRegistered);
+				systemUnderTest.RegisterDependency(secondDependencyRegistered);
 			}
 
 			[Theory]
 			[InlineData(LifecycleType.Singleton, LifecycleType.Transient)]
 			[InlineData(LifecycleType.Transient, LifecycleType.Singleton)]
-			public void ThrowsDependencyAlreadyRegisteredException(LifecycleType firstRegister, LifecycleType secondRegister)
+			public void ThrowsDependencyAlreadyRegisteredException(LifecycleType firstLifecycle, LifecycleType secondLifecycle)
 			{
-				systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), firstRegister);
+				var firstDependencyRegistered = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), firstLifecycle);
+				var secondDependencyRegistered = new Dependency(typeof(IDefaultConstructor), typeof(DefaultConstructor), secondLifecycle);
+				systemUnderTest.RegisterDependency(firstDependencyRegistered);
 
 				var exception = Assert.Throws<DependencyAlreadyRegisteredException>(() =>
 				{
-					systemUnderTest.RegisterDependency(typeof(IDefaultConstructor), secondRegister);
+					systemUnderTest.RegisterDependency(secondDependencyRegistered);
 				});
-				Assert.Equal($"Trying to register {typeof(IDefaultConstructor).FullName} with {secondRegister.ToString()} life cycle, but it was already registered with {firstRegister.ToString()}. ", exception.Message);
+				Assert.Equal($"Trying to register {typeof(IDefaultConstructor).FullName} with {secondLifecycle.ToString()} life cycle, but it was already registered with {firstLifecycle.ToString()}. ", exception.Message);
 			}
 		}
     }
