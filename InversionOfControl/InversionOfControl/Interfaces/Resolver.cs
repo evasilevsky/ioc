@@ -20,21 +20,17 @@ namespace InversionOfControl.Interfaces
 			var constructors = concreteType.GetConstructors();
 			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
 			object instance = null;
+			object[] instanceDependencies = new object[0];
 			if (constructorsWithDependencies.Count() > 1)
 			{
 				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
 			}
-			else if (constructorsWithDependencies.Count() == 0)
-			{
-				instance = Activator.CreateInstance(concreteType);
-			}
-			else
+			else if (constructorsWithDependencies.Count() != 0)
 			{
 				var dependencies = constructorsWithDependencies.ToArray()[0].GetParameters();
-				var instanceDependencies = GetInstanceDependenciesByType(dependencies);
-
-				instance = Activator.CreateInstance(concreteType, instanceDependencies);
+				instanceDependencies = GetInstanceDependenciesByType(dependencies);
 			}
+			instance = Activator.CreateInstance(concreteType, instanceDependencies);
 			return instance;
 		}
 
