@@ -43,68 +43,7 @@ namespace InversionOfControl
 				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
 			}
 			configurations.Add(interfaceType.FullName, lifeCycleType);
-		}
-
-		private object CreateInstance(LifecycleType lifecycleType, Type concreteType)
-		{
-			var constructors = concreteType.GetConstructors();
-			var constructorsWithDependencies = constructors.Where(constructor => constructor.GetParameters().Count() > 0);
-			object instance = null;
-			if (constructorsWithDependencies.Count() > 1)
-			{
-				throw new MultipleConstructorsException($"{concreteType} has multiple constructors.");
-			}
-			else if (constructorsWithDependencies.Count() == 0)
-			{
-				instance = Activator.CreateInstance(concreteType);
-			}
-			else
-			{
-				var dependencies = constructorsWithDependencies.ToArray()[0].GetParameters();
-				var instanceDependencies = GetInstanceDependenciesByType(dependencies);
-
-				instance = Activator.CreateInstance(concreteType, instanceDependencies);
-			}
-			return instance;
-		}
-
-		private object[] GetInstanceDependenciesByType(ParameterInfo[] dependencies)
-		{
-			var instanceDependencies = new List<object>();
-			foreach (var dependency in dependencies)
-			{
-				object instanceDependency = null;
-
-				if (singletonInstances.ContainsKey(dependency.ParameterType.FullName))
-				{
-					instanceDependency = singletonInstances[dependency.ParameterType.FullName];
-				}
-				else
-				{
-					var inheritedType = GetInheritedType(dependency.ParameterType);
-					instanceDependency = Resolve(dependency.ParameterType);
-				}
-				instanceDependencies.Add(instanceDependency);
-			}
-			return instanceDependencies.ToArray();
-		}
-
-		private Type GetInheritedType(Type interfaceType) {
-			if (!interfaceType.IsInterface)
-			{
-				throw new InterfaceExpectedException();
-			}
-			var inheritedTypes = AppDomain.CurrentDomain.GetAssemblies()
-				.SelectMany(assembly => assembly.GetTypes())
-				.Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface)
-				.ToList();
-			if (inheritedTypes.Count() != 1)
-			{
-				throw new Exception();
-			}
-			return inheritedTypes[0];
-		}
-		
+		}	
 
 		public object Resolve<T>()
 		{
