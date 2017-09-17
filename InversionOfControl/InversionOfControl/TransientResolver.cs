@@ -9,6 +9,11 @@ namespace InversionOfControl
 		{
 
 		}
+
+		public override object Resolve<T>()
+		{
+			return Resolve(typeof(T));
+		}
 		public override object Resolve(Type interfaceType)
 		{
 			var concreteType = GetInheritedType(interfaceType);

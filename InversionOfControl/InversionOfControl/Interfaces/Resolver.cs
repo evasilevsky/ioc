@@ -9,6 +9,7 @@ namespace InversionOfControl.Interfaces
 	public abstract class Resolver
     {
 		public abstract object Resolve(Type interfaceType);
+		public abstract object Resolve<T>();
 		private ResolverFactory resolverFactory;
 		public Resolver(ResolverFactory resolverFactory)
 		{

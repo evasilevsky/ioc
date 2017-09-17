@@ -22,5 +22,10 @@ namespace InversionOfControl
 			}
 			return singletonInstances[interfaceType.FullName];
 		}
+
+		public override object Resolve<T>()
+		{
+			return Resolve(typeof(T));
+		}
 	}
 }
