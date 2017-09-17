@@ -31,6 +31,10 @@ namespace InversionOfControl
 
 		public Dependency GetDependencyByType(Type type)
 		{
+			if (!configurations.ContainsKey(type.FullName))
+			{
+				throw new DependencyNotRegisteredException($"{type.FullName} did not get registered. ");
+			}
 			return configurations[type.FullName];
 		}
 
@@ -52,7 +56,8 @@ namespace InversionOfControl
 			}
 			else if (configurations[dependency.InterfaceType.FullName].LifecycleType != dependency.LifecycleType)
 			{
-				throw new DependencyAlreadyRegisteredException($"Trying to register {dependency.InterfaceType.FullName} with {dependency.LifecycleType.ToString()} life cycle, but it was already registered with {configurations[dependency.InterfaceType.FullName].ToString()}. ");
+				var registeredDependency = configurations[dependency.InterfaceType.FullName];
+				throw new DependencyAlreadyRegisteredException($"Trying to register {dependency.InterfaceType.FullName} with {dependency.LifecycleType.ToString()} life cycle, but it was already registered with {registeredDependency.LifecycleType.ToString()}. ");
 			}
 		}
 	}

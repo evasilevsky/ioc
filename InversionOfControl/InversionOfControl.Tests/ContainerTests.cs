@@ -94,7 +94,7 @@ namespace InversionOfControl.Tests
 			public void Resolves_TypeWithTwoSubclasses()
 			{
 				systemUnderTest.Register<IDefaultConstructor, AnotherDefaultConstructor>();
-				var result = systemUnderTest.Resolve<IUsersController>();
+				var result = systemUnderTest.Resolve<IDefaultConstructor>();
 				Assert.IsType<AnotherDefaultConstructor>(result);
 			}
 		}
