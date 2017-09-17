@@ -31,7 +31,7 @@ namespace InversionOfControl
 			}
 			if (!interfaceType.IsAssignableFrom(concreteType))
 			{
-				throw new InheritanceException($"{interfaceType} is not assignable from ${concreteType}");
+				throw new InheritanceException($"{interfaceType} is not assignable from {concreteType}");
 			}
 			if (singletonInstances.ContainsKey(interfaceType.FullName))
 			{

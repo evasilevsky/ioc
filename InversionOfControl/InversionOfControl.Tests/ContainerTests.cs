@@ -22,7 +22,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<DefaultConstructor, DefaultConstructor>();
 				});
-				Assert.Contains(" is not an interface.", exception.Message);
+				Assert.Equal($"{typeof (DefaultConstructor).FullName} is not an interface.", exception.Message);
 			}
 			[Fact]
 			public void ThrowsClassExpectedException_WhenSecondTypeIsAnInterface()
@@ -31,16 +31,16 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IDefaultConstructor, IDefaultConstructor>();
 				});
-				Assert.Contains(" is abstract or not a class. ", exception.Message);
+				Assert.Equal($"{typeof (IDefaultConstructor).FullName} is abstract or not a class. ", exception.Message);
 			}
 			[Fact]
 			public void ThrowsClassExpectedException_WhenSecondTypeIsAbstract()
 			{
 				var exception = Assert.Throws<ConcreteClassExpectedException>(() =>
 				{
-					systemUnderTest.Register<IDefaultConstructor, D>();
+					systemUnderTest.Register<IDefaultConstructor, AbstractClass>();
 				});
-				Assert.Contains(" is abstract or not a class. ", exception.Message);
+				Assert.Equal($"{typeof(AbstractClass).FullName} is abstract or not a class. ", exception.Message);
 			}
 			[Fact]
 			public void ThrowsInheritanceException_WhenSecondTypeDoesNotInheritFromFirst()
@@ -49,7 +49,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IDefaultConstructor, OneDependencyWithDefaultConstructor>();
 				});
-				Assert.Contains(" is not assignable from ", exception.Message);
+				Assert.Equal($"{typeof (IDefaultConstructor).FullName} is not assignable from {typeof(OneDependencyWithDefaultConstructor).FullName}", exception.Message);
 			}
 
 			[Fact]
@@ -59,7 +59,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Register<IMultipleConstructor, MultipleConstructor>();
 				});
-				Assert.Contains(" has multiple constructors.", exception.Message);
+				Assert.Equal($"{typeof(MultipleConstructor).FullName} has multiple constructors.", exception.Message);
 			}
 
 			[Fact]
@@ -78,7 +78,7 @@ namespace InversionOfControl.Tests
 				{
 					systemUnderTest.Resolve<IDefaultConstructor>();
 				});
-				Assert.Contains(" did not get registered. ", exception.Message);
+				Assert.Contains($"{typeof(IDefaultConstructor).FullName} did not get registered. ", exception.Message);
 			}
 			[Fact]
 			public void ResolvesDependency_WhenDependencyWasRegistered_WithParameterlessConstructor()
