@@ -101,6 +101,14 @@ namespace InversionOfControl.Tests
 				Assert.IsType<DependencyWithDependency>(result);
 			}
 
+			[Fact(Skip = "If it isn't registered, this doesn't work")]
+			public void ResolvesDependency_WhenNoOtherDependenciesItUsesWereRegistered()
+			{
+				systemUnderTest.Register<IDependencyWithDependency, DependencyWithDependency>();
+				var result = systemUnderTest.Resolve<IDependencyWithDependency>();
+				Assert.IsType<DependencyWithDependency>(result);
+			}
+
 
 			[Fact(Skip = "This fails because the search for an inherited dependency results in ICircularDependency1.IsSubclassOf(CircularDependency1) equal to false")]
 			public void ResolvesDependency_WhenItHasACircularDependency()
